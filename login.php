@@ -5,8 +5,8 @@ include 'includes/db.php'; // Kết nối cơ sở dữ liệu
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
-
-    // Truy vấn kiểm tra tài khoản
+    
+    // Truy vấn kiểm tra tài khoả
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username AND password = :password");
     $stmt->execute(['username' => $username, 'password' => $password]);
     $user = $stmt->fetch();
