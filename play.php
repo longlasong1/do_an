@@ -1,51 +1,27 @@
 <?php
-// Bật hiển thị lỗi (để debug nếu cần)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+session_start();
+include 'db.php'; // Kết nối database
 
-// Kết nối MySQL
-$servername = "127.0.0.1";
-$username = "root"; // Thay đổi nếu cần
-$password = "longzokai1"; // Thay đổi nếu cần
-$database = "music1"; // Thay đổi theo tên database của bạn
+if (isset($_GET['id'])) {
+    $song_id = $_GET['id'];
 
-$conn = new mysqli($servername, $username, $password, $database);
+    // Lấy thông tin bài hát từ bảng `songs`
+    $stmt = $pdo->prepare("SELECT * FROM songs WHERE id = :id");
+    $stmt->bindParam(":id", $song_id);
+    $stmt->execute();
+    $song = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Kiểm tra kết nối
-if ($conn->connect_error) {
-    die("Kết nối thất bại: " . $conn->connect_error);
-}
-
-// Kiểm tra song_id có tồn tại & có phải số không
-if (!isset($_GET["song_id"]) || !ctype_digit($_GET["song_id"])) {
-    echo "<h3 class='text-center text-danger mt-5'>Lỗi: Thiếu hoặc sai định dạng song_id!</h3>";
-    echo '<div class="text-center"><a href="index.php" class="btn btn-primary">Quay lại trang chủ</a></div>';
-    exit;
-}
-
-$song_id = intval($_GET["song_id"]);
-
-// Truy vấn lấy bài hát từ CSDL
-$sql = "SELECT title, artist, file_path FROM songs WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $song_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Kiểm tra bài hát có tồn tại không
-if ($row = $result->fetch_assoc()) {
-    $title = htmlspecialchars($row["title"]);
-    $artist = htmlspecialchars($row["artist"]);
-    $file_path = htmlspecialchars($row["file_path"]);
+    if ($song) {
+        // Cập nhật ranking (+1) trong bảng `ranking`
+        $stmt_rank = $pdo->prepare("UPDATE ranking SET ranking = ranking + 1 WHERE song_id = :id");
+        $stmt_rank->bindParam(":id", $song_id);
+        $stmt_rank->execute();
+    } else {
+        die("Bài hát không tồn tại.");
+    }
 } else {
-    echo "<h3 class='text-center text-danger mt-5'>Lỗi: Không tìm thấy bài hát!</h3>";
-    echo '<div class="text-center"><a href="index.php" class="btn btn-primary">Quay lại trang chủ</a></div>';
-    exit;
+    die("Thiếu ID bài hát.");
 }
-
-// Đóng kết nối
-$stmt->close();
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -53,45 +29,32 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nghe Nhạc - <?php echo $title; ?></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Phát Nhạc</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            text-align: center;
-        }
+        body { background-color: #f8f9fa; text-align: center; padding-top: 50px; }
         .player-container {
-            background: white;
+            width: 50%;
+            margin: auto;
             padding: 20px;
+            background: white;
             border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 100%;
-        }
-        audio {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .artist {
-            font-size: 1.2rem;
-            color: gray;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-    <div class="player-container">
-        <h2><?php echo $title; ?></h2>
-        <p class="artist">Ca sĩ: <?php echo $artist; ?></p>
-        <audio controls autoplay>
-            <source src="<?php echo $file_path; ?>" type="audio/mpeg">
-            Trình duyệt không hỗ trợ phát nhạc.
-        </audio>
-        <br><br>
-        <a href="index.php" class="btn btn-primary">Quay lại danh sách</a>
-    </div>
+
+<div class="player-container">
+    <h2><?php echo htmlspecialchars($song['title']); ?></h2>
+    <p><strong>Nghệ sĩ:</strong> <?php echo htmlspecialchars($song['artist']); ?></p>
+    <audio controls autoplay>
+        <source src="<?php echo htmlspecialchars($song['file_path']); ?>" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ phát nhạc.
+    </audio>
+    <br><br>
+    <a href="index.php" class="btn btn-primary">Quay lại danh sách</a>
+</div>
+
 </body>
+</html>

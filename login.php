@@ -1,6 +1,8 @@
 <?php
+
 session_start();
-include 'includes/db.php'; // Kết nối cơ sở dữ liệu
+
+include 'db.php'; // Kết nối cơ sở dữ liệu
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];

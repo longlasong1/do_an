@@ -76,8 +76,9 @@ session_start();
 
 <!-- Các button khác -->
 <a href="search.php" class="btn">Tìm kiếm nhạc</a>
-<a href="ranking.php" class="btn">Bảng xếp hạng</a>
-<a href="upload.php" class="btn">Tải nhạc lên</a>
+<a href="ranking.php" class="btn">Xem bảng xếp hạng</a>
+
+
 
 </body>
 </html>
