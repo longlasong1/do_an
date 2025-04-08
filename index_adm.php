@@ -69,7 +69,9 @@ session_start();
 
 <!-- Các button khác -->
 
-<a href="delete_song.php" class="btn">xóa nhạc</a>
+<a href="ql_songs.php" class="btn">quản lý bài hát</a>
 <a href="upload.php" class="btn">Tải nhạc lên</a>
+<a href="upload_album.php" class="btn">Tải album lên</a>
+
 </body>
 </html>

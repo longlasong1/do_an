@@ -1,5 +1,17 @@
 <?php
 session_start();
+include("db.php"); // Kết nối CSDL
+include("header.php"); // Gọi header
+
+try {
+    // Truy vấn lấy tất cả bài hát
+    $sql = "SELECT * FROM songs";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $songs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Lỗi truy vấn: " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -8,77 +20,93 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ - Website Nghe Nhạc</title>
+    <link rel="stylesheet" href="style.css"> <!-- Gọi file CSS ở đây -->
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            padding: 20px;
+       
+        
+
+        /* Danh sách bài hát */
+        .song-list {
+            width: 90%;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #008CBA;
+        .song {
+            width: 200px;
+            background: white;
             padding: 15px;
-            color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .song img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
             border-radius: 8px;
         }
 
-        .header h1 {
-            margin: 0;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            background: white;
-            color: #008CBA;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
+        .song-title {
             font-size: 16px;
-            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
         }
 
-        .btn:hover {
-            background: #007bb5;
-            color: white;
+        .song-artist {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
         }
 
-        .logout-btn {
-            background: red;
-            color: white;
-        }
 
-        .logout-btn:hover {
-            background: darkred;
-        }
+       
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>Website Nghe Nhạc</h1>
+<div class="wrapper">
+    
 
-    <div>
-        <?php if (isset($_SESSION['username'])): ?>
-            <span>Xin chào, <b><?php echo $_SESSION['username']; ?></b>!</span>
-            <a href="logout.php" class="btn logout-btn">Đăng xuất</a>
-        <?php else: ?>
-            <a href="login.html" class="btn">Đăng Nhập</a>
-        <?php endif; ?>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Danh Mục</h2>
+        <a href="search.php">🎵 Tìm kiếm nhạc</a>
+        <a href="ranking.php">📊 Xem bảng xếp hạng</a>
+        <a href="newsongs.php">🔥 Nhạc mới</a>
+        <a href="history.php">📜 Lịch sử nghe nhạc</a> 
+        <a href="rank7d.php">📊 Xem top tuần</a> 
+        <a href="mylist.php">💖 Danh Sách Cá Nhân</a>
     </div>
+
+    <!-- Nội dung chính -->
+    <div class="content">
+        <div class="welcome-text">
+            <h2><center>Danh Sách Bài Hát</center></h2>
+        </div>
+
+        <div class="song-list">
+            <?php if (!empty($songs)): ?>
+                <?php foreach ($songs as $song): ?>
+                    <div class="song">
+                        <img src="<?php echo htmlspecialchars($song['poster']); ?>" alt="Poster">
+                        <div class="song-title"><?php echo htmlspecialchars($song['title']); ?></div>
+                        <div class="song-artist"><?php echo htmlspecialchars($song['artist']); ?></div>
+                        <a href="play.php?song_id=<?php echo $song['id']; ?>" class="play-btn">🎵 Nghe ngay</a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Không có bài hát nào trong cơ sở dữ liệu.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <?php include("footer.php"); ?> <!-- Gọi footer -->
 </div>
-
-<h2>Chào mừng đến với trang web nghe nhạc!</h2>
-<p>Chọn chức năng bạn muốn sử dụng:</p>
-
-<!-- Các button khác -->
-<a href="search.php" class="btn">Tìm kiếm nhạc</a>
-<a href="ranking.php" class="btn">Xem bảng xếp hạng</a>
-
-
 
 </body>
 </html>

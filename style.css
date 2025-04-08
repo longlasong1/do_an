@@ -1,0 +1,127 @@
+/* Thiết lập cơ bản */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Thiết lập trang sử dụng flexbox */
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Wrapper chứa nội dung chính và footer */
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Giữ trang ít nhất bằng chiều cao màn hình */
+}
+
+/* Nội dung chính sẽ mở rộng để đẩy footer xuống */
+.content {
+    flex: 1;
+    margin-left: 260px; /* Để tránh bị che bởi sidebar */
+    padding: 20px;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #008CBA;
+    padding: 15px 20px;
+    color: white;
+    z-index: 1000;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.btn {
+    padding: 10px 15px;
+    background: white;
+    color: #008CBA;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.logout-btn {
+    background: red;
+    color: white;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 60px;
+    width: 250px;
+    height: 100vh;
+    background: #2c3e50;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar h2 {
+    color: white;
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar a:hover {
+    background: #1abc9c;
+}
+/* Footer */
+.footer {
+    background: #2c3e50; 
+    color: white;
+    text-align: center;
+    padding: 15px;
+    width: 100%; 
+    position: relative;
+    bottom: 0;
+    left: 0;
+}
+
+.footer a {
+    color: #1abc9c;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+.play-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #008CBA;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.play-btn:hover {
+    background: #007bb5;
+}

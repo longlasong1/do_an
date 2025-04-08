@@ -1,53 +1,52 @@
 <?php
-include 'db.php'; // Kết nối database
+require 'db.php'; // Kết nối database
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $title = $_POST['title'];
     $artist = $_POST['artist'];
-    $upload_dir = "uploads/"; // Thư mục lưu file
-    $file_name = basename($_FILES["music_file"]["name"]);
-    $file_path = $upload_dir . $file_name;
-    $upload_ok = 1;
+    
+    $target_dir = "uploads/";
+    $music_file = $target_dir . basename($_FILES["music_file"]["name"]);
+    $poster_file = $target_dir . basename($_FILES["poster_file"]["name"]);
 
-    // Kiểm tra file có phải định dạng nhạc không
-    $file_type = strtolower(pathinfo($file_path, PATHINFO_EXTENSION));
-    $allowed_types = ["mp3", "wav", "flac"];
+    if (move_uploaded_file($_FILES["music_file"]["tmp_name"], $music_file) && move_uploaded_file($_FILES["poster_file"]["tmp_name"], $poster_file)) {
+        $pdo->beginTransaction();
+        try {
+            // Thêm vào bảng songs
+            $sql = "INSERT INTO songs (title, artist, file_path, poster) VALUES (:title, :artist, :file_path, :poster)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':artist', $artist);
+            $stmt->bindParam(':file_path', $music_file);
+            $stmt->bindParam(':poster', $poster_file);
+            $stmt->execute();
 
-    if (!in_array($file_type, $allowed_types)) {
-        $error = "Chỉ chấp nhận file nhạc (MP3, WAV, FLAC).";
-        $upload_ok = 0;
-    }
+            // Lấy ID của bài hát vừa thêm
+            $song_id = $pdo->lastInsertId();
 
-    // Kiểm tra nếu file_path đã tồn tại trong database
-    $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM songs WHERE file_path = :file_path");
-    $stmt_check->bindParam(":file_path", $file_path);
-    $stmt_check->execute();
-    $file_exists = $stmt_check->fetchColumn();
+            
+            // Thêm vào bảng ranking với song_id và ranking mặc định là 0
+            $sql_ranking = "INSERT INTO ranking (song_id, title, ranking) VALUES (:song_id, :title, 0)";
+            $stmt_ranking = $pdo->prepare($sql_ranking);
+            $stmt_ranking->bindParam(':song_id', $song_id, PDO::PARAM_INT);
+            $stmt_ranking->bindParam(':title', $title);
+            $stmt_ranking->execute();
 
-    if ($file_exists > 0) {
-        $error = "File đã tồn tại trong hệ thống.";
-        $upload_ok = 0;
-    }
+            // Thêm vào bảng rank7d với song_id và ranking mặc định là 0
+            $sql_rank7d = "INSERT INTO rank7d (song_id, title, ranking) VALUES (:song_id, :title, 0)";
+            $stmt_rank7d = $pdo->prepare($sql_rank7d);
+            $stmt_rank7d->bindParam(':song_id', $song_id, PDO::PARAM_INT);
+            $stmt_rank7d->bindParam(':title', $title);
+            $stmt_rank7d->execute();
 
-    // Kiểm tra nếu file hợp lệ
-    if ($upload_ok && move_uploaded_file($_FILES["music_file"]["tmp_name"], $file_path)) {
-        // Lưu vào bảng `songs`
-        $sql = "INSERT INTO songs (title, artist, file_path) VALUES (:title, :artist, :file_path)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(":title", $title);
-        $stmt->bindParam(":artist", $artist);
-        $stmt->bindParam(":file_path", $file_path);
-        $stmt->execute();
-        $song_id = $pdo->lastInsertId(); // Lấy ID của bài hát vừa thêm
-
-        // Lưu vào bảng `ranking`
-        $sql_rank = "INSERT INTO ranking (song_id, title, ranking) VALUES (:song_id, :title, 0)";
-        $stmt_rank = $pdo->prepare($sql_rank);
-        $stmt_rank->bindParam(":song_id", $song_id);
-        $stmt_rank->bindParam(":title", $title);
-        $stmt_rank->execute();
-
-        $success = "Upload thành công!";
+            $pdo->commit();
+            echo "<p class='success'>Upload thành công!</p>";
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            echo "<p class='error'>Lỗi: " . $e->getMessage() . "</p>";
+        }
+    } else {
+        echo "<p class='error'>Lỗi khi tải lên file.</p>";
     }
 }
 ?>
@@ -58,51 +57,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Nhạc</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .upload-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
             background: white;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .upload-container h2 { text-align: center; }
-        .message {
+            width: 300px;
             text-align: center;
-            margin-bottom: 10px;
-            font-weight: bold;
         }
-        .error { color: red; }
-        .success { color: green; }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+        }
+        input[type="submit"]:hover {
+            background: #218838;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
-
-<div class="upload-container">
-    <h2>Upload Nhạc</h2>
-    <?php 
-        if (isset($error)) echo "<p class='message error'>$error</p>"; 
-        if (isset($success)) echo "<p class='message success'>$success</p>";
-    ?>
-    <form method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label class="form-label">Tên bài hát</label>
-            <input type="text" class="form-control" name="title" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Tên nghệ sĩ</label>
-            <input type="text" class="form-control" name="artist" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Chọn file nhạc</label>
-            <input type="file" class="form-control" name="music_file" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Upload</button>
-    </form>
-</div>
-
+    <div class="container">
+        <h2>Upload Nhạc</h2>
+        <form action="upload.php" method="post" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Tiêu đề bài hát" required><br>
+            <input type="text" name="artist" placeholder="Tên nghệ sĩ" required><br>
+            <input type="file" name="music_file" accept="audio/*" required><br>
+            <input type="file" name="poster_file" accept="image/*" required><br>
+            <input type="submit" value="Upload Nhạc">
+            <a href="index_adm.php" class="btn">trang chủ</a>
+        </form>
+    </div>
 </body>
 </html>
