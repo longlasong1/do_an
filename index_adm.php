@@ -71,7 +71,7 @@ session_start();
 
 <a href="ql_songs.php" class="btn">quản lý bài hát</a>
 <a href="upload.php" class="btn">Tải nhạc lên</a>
-<a href="upload_album.php" class="btn">Tải album lên</a>
+<a href="qluser.php" class="btn">quản lý user</a>
 
 </body>
 </html>
