@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include("db.php"); // Kết nối CSDL
 include("header.php"); // Gọi header
 

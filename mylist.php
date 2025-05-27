@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include("db.php"); // Kết nối CSDL
 include("header.php"); // Gọi header
 
@@ -59,7 +59,7 @@ try {
     <style>
         .content {
             margin-left: 260px;
-            padding: 20px;
+            padding: 80px;
         }
         .song-list {
             display: flex;
@@ -136,10 +136,7 @@ try {
                     <img src="<?php echo htmlspecialchars($song['poster']); ?>" alt="Poster">
                     <div class="song-title"><?php echo htmlspecialchars($song['title']); ?></div>
                     <div class="song-artist"><?php echo htmlspecialchars($song['artist']); ?></div>
-                    <audio controls>
-                        <source src="<?php echo htmlspecialchars($song['file_path']); ?>" type="audio/mpeg">
-                        Trình duyệt không hỗ trợ phát nhạc.
-                    </audio>
+                    
                     <br>
                     <a href="play.php?song_id=<?php echo $song['id']; ?>" class="play-btn">🎵 Nghe ngay</a>
                     <a href="mylist.php?remove=<?php echo $song['id']; ?>" class="remove-btn">❌ Xóa</a>

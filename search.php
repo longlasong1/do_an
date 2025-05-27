@@ -74,10 +74,10 @@ if (isset($_GET['query']) && !empty($_GET['query'])) {
 
         /* Nội dung chính */
         .content {
-            margin-left: 240px;
+            margin-left: 60px;
             margin-top: 80px;
             width: 100%;
-            max-width: 800px;
+            max-width: 1000px;
             padding: 20px;
         }
 
@@ -175,6 +175,7 @@ if (isset($_GET['query']) && !empty($_GET['query'])) {
             <p>Không tìm thấy bài hát nào.</p>
         <?php endif; ?>
     </div>
+</div>
 </div>
 <?php include("footer.php"); ?> <!-- Gọi footer -->
 </div>

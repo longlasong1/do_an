@@ -98,6 +98,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tr>
         <?php endforeach; ?>
     </table>
+    <a class="btn-back" href="index_adm.php">🔙 Quay lại </a>
 </div>
 </body>
 </html>

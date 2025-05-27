@@ -1,6 +1,9 @@
 <?php
 session_start();
+
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -60,18 +63,17 @@ session_start();
 
 <div class="header">
     <h1>Website Nghe Nhạc</h1>
-    
-    <a href="login_adm.php" class="btn">Đăng Xuất</a>
+    <a href="login_adm.php" class="btn logout-btn">Đăng Xuất</a>
 </div>
 
 <h2>Chào mừng đến với trang web nghe nhạc!</h2>
-<p>Chào admin bạn muốn làm gì:</p>
+<p>Chào admin, bạn muốn làm gì:</p>
 
-<!-- Các button khác -->
-
-<a href="ql_songs.php" class="btn">quản lý bài hát</a>
+<a href="ql_songs.php" class="btn">Quản lý bài hát</a>
 <a href="upload.php" class="btn">Tải nhạc lên</a>
-<a href="qluser.php" class="btn">quản lý user</a>
+<a href="qluser.php" class="btn">Quản lý user</a>
+<a href="rsrank7d.php" class="btn">làm mới bảng xếp hạng tuần</a>
+<a href="ad_adm.php" class="btn">thêm tài khoản adm mới</a>
 
 </body>
 </html>

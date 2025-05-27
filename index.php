@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include("db.php"); // Kết nối CSDL
 include("header.php"); // Gọi header
 
@@ -104,6 +104,7 @@ try {
             <?php endif; ?>
         </div>
     </div>
+    
 
     <?php include("footer.php"); ?> <!-- Gọi footer -->
 </div>

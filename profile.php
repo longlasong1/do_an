@@ -23,11 +23,7 @@ if (!$user) {
 $user_id = $user['id'];
 $email = $user['email'];
 
-// Lấy lịch sử nghe nhạc
-$stmt = $pdo->prepare("SELECT songs.title, history.listened_at FROM history JOIN songs ON history.song_id = songs.id WHERE history.user_id = :user_id ORDER BY history.listened_at DESC");
-$stmt->bindParam(":user_id", $user_id, PDO::PARAM_INT);
-$stmt->execute();
-$history_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -74,14 +70,10 @@ $history_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <p><b>Username:</b> <?php echo htmlspecialchars($username); ?></p>
         <p><b>Email:</b> <?php echo htmlspecialchars($email); ?></p>
         
-        <h3>Lịch sử nghe nhạc</h3>
-        <ul>
-            <?php foreach ($history_result as $row): ?>
-                <li><?php echo htmlspecialchars($row['title']) . " - " . htmlspecialchars($row['listened_at']); ?></li>
-            <?php endforeach; ?>
-        </ul>
+       
 
         <a href="index.php" class="btn">Quay lại Trang Chủ</a>
+        <a href="" class="btn">Thay Đôi Thông Tin</a>
     </div>
 </body>
 </html>

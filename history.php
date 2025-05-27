@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 include("db.php"); // Kết nối CSDL
 include("header.php"); // Gọi header
 
@@ -46,7 +46,7 @@ try {
     <style>
         .content {
             margin-left: 260px;
-            padding: 20px;
+            padding: 80px;
             flex-grow: 1;
         }
 
@@ -104,6 +104,10 @@ try {
 
 <!-- Nội dung chính -->
 <div class="content">
+
+
+
+
     <h2 style="text-align: center;">Lịch Sử Nghe Nhạc</h2>
     
     <?php if (!empty($history_songs)): ?>
